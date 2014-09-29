@@ -32,7 +32,6 @@
 #import "GMGridViewLayoutStrategies.h"
 #import "UIGestureRecognizer+GMGridViewAdditions.h"
 
-static const NSInteger kTagOffset = 50;
 static const CGFloat kDefaultAnimationDuration = 0.3;
 static const UIViewAnimationOptions kDefaultAnimationOptions = UIViewAnimationOptionBeginFromCurrentState | UIViewAnimationOptionAllowUserInteraction;
 
@@ -248,7 +247,11 @@ static const UIViewAnimationOptions kDefaultAnimationOptions = UIViewAnimationOp
     self.minimumPressDuration = 0.2;
     self.showFullSizeViewWithAlphaWhenTransforming = YES;
     self.minEdgeInsets = UIEdgeInsetsMake(5, 5, 5, 5);
-    self.clipsToBounds = NO;
+    self.clipsToBounds = YES;
+    
+    self.showsHorizontalScrollIndicator = NO;
+    self.showsVerticalScrollIndicator = NO;
+    self.bounces = NO;
     
     _sortFuturePosition = GMGV_INVALID_POSITION;
     _itemSize = CGSizeZero;
@@ -261,6 +264,7 @@ static const UIViewAnimationOptions kDefaultAnimationOptions = UIViewAnimationOp
     _maxPossibleContentOffset = CGPointMake(0, 0);
     
     _reusableCells = [[NSMutableSet alloc] init];
+    
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(receivedMemoryWarningNotification:) name:UIApplicationDidReceiveMemoryWarningNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(receivedWillRotateNotification:) name:UIApplicationWillChangeStatusBarOrientationNotification object:nil];
@@ -300,7 +304,7 @@ static const UIViewAnimationOptions kDefaultAnimationOptions = UIViewAnimationOp
     
     if (_rotationActive) 
     {
-         _rotationActive = NO;
+        _rotationActive = NO;
         
         // Updating all the items size
         
@@ -476,6 +480,20 @@ static const UIViewAnimationOptions kDefaultAnimationOptions = UIViewAnimationOp
 //////////////////////////////////////////////////////////////
 #pragma mark GestureRecognizer delegate
 //////////////////////////////////////////////////////////////
+
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch
+{
+    if ( gestureRecognizer == _tapGesture || gestureRecognizer == _longPressGesture ) {
+        if ( [touch.view isDescendantOfView:self] ) {
+            // Test if the touched view is a subview of a control
+            for ( UIView *view = touch.view ; view != self ; view = view.superview )
+                if ( [view isKindOfClass:[UIControl class]] )
+                    return NO;
+        }
+    }
+    
+    return YES;
+}
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer
 {
@@ -772,8 +790,8 @@ static const UIViewAnimationOptions kDefaultAnimationOptions = UIViewAnimationOp
 
 - (void)sortingMoveDidContinueToPoint:(CGPoint)point
 {
-    int position = [self.layoutStrategy itemPositionFromLocation:point];
-    int tag = position + kTagOffset;
+    NSInteger position = [self.layoutStrategy itemPositionFromLocation:point];
+    NSInteger tag = position + kTagOffset;
     
     if (position != GMGV_INVALID_POSITION && position != _sortFuturePosition && position < _numberTotalItems) 
     {
@@ -1626,7 +1644,7 @@ static const UIViewAnimationOptions kDefaultAnimationOptions = UIViewAnimationOp
     {        
         cell = [self newItemSubViewForPosition:index];
         
-        for (int i = _numberTotalItems - 1; i >= index; i--)
+        for (NSInteger i = _numberTotalItems - 1; i >= index; i--)
         {
             UIView *oldView = [self cellForItemAtIndex:i];
             oldView.tag = oldView.tag + 1;
@@ -1679,7 +1697,7 @@ static const UIViewAnimationOptions kDefaultAnimationOptions = UIViewAnimationOp
     
     GMGridViewCell *cell = [self cellForItemAtIndex:index];
     
-    for (int i = index + 1; i < _numberTotalItems; i++)
+    for (NSInteger i = index + 1; i < _numberTotalItems; i++)
     {
         GMGridViewCell *oldView = [self cellForItemAtIndex:i];
         oldView.tag = oldView.tag - 1;

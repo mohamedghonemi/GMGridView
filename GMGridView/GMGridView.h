@@ -30,6 +30,8 @@
 #import "GMGridView-Constants.h"
 #import "GMGridViewCell.h"
 
+static const NSInteger kTagOffset = 50;
+
 @protocol GMGridViewDataSource;
 @protocol GMGridViewActionDelegate;
 @protocol GMGridViewSortingDelegate;

@@ -344,15 +344,15 @@
 - (void)stepToFullsizeWithAlpha:(CGFloat)alpha
 {
     return; // not supported anymore - to be fixed
-    
-    if (![self isInFullSizeMode]) 
-    {
-        alpha = MAX(0, alpha);
-        alpha = MIN(1, alpha);
-        
-        self.fullSizeView.alpha = alpha;
-        self.contentView.alpha  = 1.4 - alpha;
-    }
+//    
+//    if (![self isInFullSizeMode]) 
+//    {
+//        alpha = MAX(0, alpha);
+//        alpha = MIN(1, alpha);
+//        
+//        self.fullSizeView.alpha = alpha;
+//        self.contentView.alpha  = 1.4 - alpha;
+//    }
 }
 
 @end

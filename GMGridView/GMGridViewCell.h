@@ -37,6 +37,8 @@
 @property (nonatomic, strong) NSString *reuseIdentifier;
 @property (nonatomic, getter=isHighlighted) BOOL highlighted;
 
+@property (nonatomic, gm_weak) UIButton *deleteButton;
+
 /// Override to release custom data before cell is reused.
 - (void)prepareForReuse;
 
